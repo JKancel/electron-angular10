@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IpcRenderer } from 'electron';
+import {ElectronService} from 'ngx-electron';
 
 @Component({
   selector: 'app-root',
@@ -8,23 +8,26 @@ import { IpcRenderer } from 'electron';
 })
 export class AppComponent {
   title = 'electron-angular-demo';
-  private ipc: IpcRenderer
 
-  constructor(){
-    if ((<any>window).require) {
-      try {
-        this.ipc = (<any>window).require('electron').ipcRenderer;
-      } catch (e) {
-        throw e;
-      }
-
-    } else {
-      console.warn('App not running inside Electron!');
+  constructor(private _electronService: ElectronService){
+    if(this._electronService.isElectronApp) {
+      this.pingPong();
+      this.numberDoubled();
     }
   }
-  
+
   openModal(){
     console.log("Open a modal");
-    this.ipc.send("openModal");
+    this._electronService.ipcRenderer.send("openModal");
+  }
+
+  async pingPong(){
+    let pong: string = await this._electronService.ipcRenderer.invoke('ping');
+    console.log(pong);
+  }
+
+  async numberDoubled(){
+    let result: string = await this._electronService.ipcRenderer.invoke('numberDoubled', 5);
+    console.log(result)
   }
 }

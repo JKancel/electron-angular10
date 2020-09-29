@@ -44,10 +44,17 @@ function openModal(){
   modal.loadURL('https://www.google.com')
   modal.once('ready-to-show', () => {
     modal.show()
-  })
+  });
 }
 
 ipcMain.on('openModal', (event, arg) => {
   openModal()
 })
 
+ipcMain.handle('ping', (event, arg) => {
+  return Promise.resolve("pong");
+})
+
+ipcMain.handle('numberDoubled', (event, arg) => {
+  return Promise.resolve(arg * 2);
+})
